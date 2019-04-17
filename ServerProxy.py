@@ -85,6 +85,7 @@ async def handler(reader,writer):
 
 async def main():
     # 启动异步io服务端
+    asyncio.Semaphore(200)
     server = await asyncio.start_server(
         handler, '127.0.0.1', 3000)
 
