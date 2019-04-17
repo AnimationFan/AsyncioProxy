@@ -96,7 +96,7 @@ async def handler(reader, writer):
         iLength = int.from_bytes(bLength, byteorder='big', signed=False)
         # 读域名
         bHostName = await reader.read(iLength)
-        if (bHostName == b'www.google.com.hk'):
+        if (bHostName == b'www.google.com.hk' or bHostName==b'accounts.google.com' or bHostName==b'clients1.google.com'):
             writer.close()
             return
         print(bHostName)
@@ -171,10 +171,19 @@ async def handler(reader, writer):
         writer.close()
 
 
-async def main():
-    asyncio.Semaphore(50)#限定并发数
+async def fHandler(reader,writer):
+    try:
+        await asyncio.wait_for(handler(reader,writer),timeout=4.0)
+    except asyncio.TimeoutError:
+        print("请求超时")
+        return
+    return
 
-    server = await asyncio.start_server(handler, '127.0.0.1', 8888)
+
+async def main():
+    asyncio.Semaphore(100)#限定并发数
+
+    server = await asyncio.start_server(fHandler, '127.0.0.1', 8888)
     async with server:
         await server.serve_forever()
 
