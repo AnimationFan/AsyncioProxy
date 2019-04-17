@@ -83,6 +83,15 @@ async def handler(reader,writer):
     #发送给代理
     #结束
 
+async def Fhandler(reader,writer):
+    try:
+        await asyncio.wait_for(handler(reader,writer),timeout=5.0)
+    except TimeoutError as err:
+        print("发生超时错误")
+        return
+    return
+
+
 async def main():
     # 启动异步io服务端
     asyncio.Semaphore(200)
